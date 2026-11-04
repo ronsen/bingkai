@@ -136,8 +136,11 @@ class ImageService
     /**
      * Generate a unique slug based on title (or fallback) and uuid prefix.
      */
-    public function generateSlug(?string $title, string $uuid): string
-    {
+    public function generateSlug(
+        ?string $title,
+        string $uuid,
+        ?int $ignoreId = null,
+    ): string {
         $shortId = substr(str_replace('-', '', $uuid), 0, 8);
         $base = ! empty($title) ? Str::slug($title) : '';
 
@@ -145,7 +148,12 @@ class ImageService
 
         // Ensure uniqueness just in case
         $counter = 1;
-        while (ImageModel::where('slug', $slug)->exists()) {
+        while (
+            ImageModel::query()
+                ->where('slug', $slug)
+                ->when($ignoreId, fn ($query) => $query->where('id', '!=', $ignoreId))
+                ->exists()
+        ) {
             $slug = ! empty($base)
                 ? "{$base}-{$shortId}-{$counter}"
                 : "{$shortId}-{$counter}";

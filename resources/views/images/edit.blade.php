@@ -13,7 +13,7 @@
         </a>
         <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">Edit Photograph</h1>
         <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
-            Update the title and story description. Technical camera metadata and slug URLs remain unchanged.
+            Update the title and story description. Changing the title also updates the photo URL. Technical camera metadata remains unchanged.
         </p>
     </div>
 
@@ -36,11 +36,6 @@
                 alt="{{ $image->display_title }}"
                 class="w-16 h-16 object-cover rounded-lg shrink-0"
             />
-            <div class="text-xs space-y-0.5 min-w-0">
-                <p class="font-semibold text-zinc-900 dark:text-zinc-100 truncate">{{ $image->display_title }}</p>
-                <p class="text-zinc-400 font-mono">Taken: {{ $image->taken_at ? $image->taken_at->format('M d, Y') : 'Unknown' }}</p>
-                <p class="text-zinc-400 font-mono truncate">Slug: {{ $image->slug }}</p>
-            </div>
         </div>
 
         <form action="{{ route('images.update', $image->slug) }}" method="POST" class="space-y-6">

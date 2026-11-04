@@ -128,16 +128,32 @@ class ImageController extends Controller
     ): RedirectResponse {
         $image = Image::where('slug', $slug)->firstOrFail();
 
-        $image->update([
-            'title' => $request->filled('title')
-                ? trim($request->input('title'))
-                : null,
-            'description' => $request->filled('description')
-                ? trim($request->input('description'))
-                : null,
-        ]);
+        $title = $request->filled('title')
+            ? trim($request->input('title'))
+            : null;
+        $description = $request->filled('description')
+            ? trim($request->input('description'))
+            : null;
 
-        // Invalidate both the individual image cache and timeline cache
+        $oldSlug = $image->slug;
+
+        $attributes = [
+            'title' => $title,
+            'description' => $description,
+        ];
+
+        if ($title !== $image->title) {
+            $attributes['slug'] = $this->imageService->generateSlug(
+                $title,
+                $image->uuid,
+                $image->id,
+            );
+        }
+
+        $image->update($attributes);
+
+        // Invalidate both the old and current individual image cache and timeline cache
+        $this->imageService->invalidateImageCache($oldSlug);
         $this->imageService->invalidateImageCache($image->slug);
 
         return redirect()
