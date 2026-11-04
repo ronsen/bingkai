@@ -167,11 +167,13 @@ The script does not seed users or create the storage symlink, so run those two c
 
 Password login is disabled. Sign in by requesting a magic link for that address. With `MAIL_MAILER=log`, the link appears in `storage/logs/laravel.log`.
 
-To add another account, create it manually:
+To add another account, run the interactive command:
 
 ```bash
-php artisan tinker --execute 'App\Models\User::create(["name" => "Your Name", "email" => "you@example.com"]);'
+php artisan user:add
 ```
+
+It prompts for a name and email address, then creates a passwordless account.
 
 ## Image storage
 

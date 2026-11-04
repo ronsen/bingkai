@@ -9,20 +9,20 @@ use Illuminate\Foundation\Queue\Queueable;
 
 class ProcessStandardImageVariant implements ShouldQueue
 {
-    use Queueable;
+	use Queueable;
 
-    /**
-     * Create a new job instance.
-     */
-    public function __construct(
-        public ImageModel $imageRecord
-    ) {}
+	/**
+	 * Create a new job instance.
+	 */
+	public function __construct(
+		public ImageModel $imageRecord,
+	) {}
 
-    /**
-     * Execute the job.
-     */
-    public function handle(ImageService $imageService): void
-    {
-        $imageService->generateStandardVariant($this->imageRecord);
-    }
+	/**
+	 * Execute the job.
+	 */
+	public function handle(ImageService $imageService): void
+	{
+		$imageService->generateStandardVariant($this->imageRecord);
+	}
 }

@@ -8,16 +8,16 @@ use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
+	use WithoutModelEvents;
 
-    /**
-     * Seed the application's database.
-     */
-    public function run(): void
-    {
-        User::factory()->create([
-            'name' => 'Anakin',
-            'email' => 'anakin@hetanews.com',
-        ]);
-    }
+	/**
+	 * Seed the application's database.
+	 */
+	public function run(): void
+	{
+		User::factory()->create([
+			'name' => 'Anakin',
+			'email' => 'anakin@hetanews.com',
+		]);
+	}
 }
