@@ -115,7 +115,7 @@
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.5 12.75l6 6 9-13.5" />
                 </svg>
-                Publish Photograph
+                Publish
             </button>
         </div>
     </form>
