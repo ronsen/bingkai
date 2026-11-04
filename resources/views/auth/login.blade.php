@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Sign In — Bingkai')
+@section('title', 'Sign In — ' . config('app.name'))
 
 @section('content')
 <div class="max-w-md mx-auto pt-8 pb-16">

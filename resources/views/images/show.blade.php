@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', $image->display_title . ' — Bingkai')
+@section('title', $image->display_title)
 
 @section('content')
 <div class="max-w-6xl mx-auto space-y-8">

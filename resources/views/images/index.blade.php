@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Bingkai')
+@section('title', config('app.name'))
 
 @section('content')
 <div class="space-y-8">

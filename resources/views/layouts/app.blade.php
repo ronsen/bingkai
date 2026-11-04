@@ -31,7 +31,7 @@
                     <span class="w-8 h-8 rounded-lg bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 flex items-center justify-center text-xs tracking-widest font-mono font-bold shadow-sm transition-transform group-hover:scale-105">
                         BK
                     </span>
-                    <span class="tracking-wider uppercase text-sm font-bold">Bingkai</span>
+                    <span class="tracking-wider uppercase text-sm font-bold">{{ config('app.name') }}</span>
                 </a>
             </div>
 
@@ -115,7 +115,7 @@
     <!-- Clean Minimal Footer -->
     <footer class="border-t border-zinc-200/80 dark:border-zinc-800/80 py-8 text-center text-xs text-zinc-500 dark:text-zinc-400">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p>&copy; {{ date('Y') }} Bingkai.</p>
+            <p>&copy; {{ date('Y') }} {{ config('app.name') }}.</p>
             <div class="flex items-center gap-4">
 				<a href="https://github.com/ronsen/bingkai" target="_blank">Source code</a>
                 <a href="{{ route('feed') }}" class="hover:underline">RSS feed</a>
