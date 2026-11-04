@@ -32,11 +32,6 @@
                     </span>
                     <span class="tracking-wider uppercase text-sm font-bold">Bingkai</span>
                 </a>
-                <nav class="hidden sm:flex items-center gap-1 text-sm font-medium text-zinc-600 dark:text-zinc-400">
-                    <a href="{{ route('images.index') }}" class="px-3 py-1.5 rounded-md hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors {{ request()->routeIs('images.index') ? 'text-zinc-900 dark:text-white font-semibold' : '' }}">
-                        Gallery
-                    </a>
-                </nav>
             </div>
 
             <div class="flex items-center gap-3">
@@ -127,9 +122,8 @@
     <!-- Clean Minimal Footer -->
     <footer class="border-t border-zinc-200/80 dark:border-zinc-800/80 py-8 text-center text-xs text-zinc-500 dark:text-zinc-400">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p>&copy; {{ date('Y') }} Bingkai. Dedicated to high-fidelity photography and metadata preservation.</p>
+            <p>&copy; {{ date('Y') }} Bingkai.</p>
             <div class="flex items-center gap-4">
-                <a href="{{ route('images.index') }}" class="hover:underline">Gallery</a>
                 @auth
                     @if (auth()->user()->isAdmin())
                         <a href="{{ route('images.create') }}" class="hover:underline">Upload</a>

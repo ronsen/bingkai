@@ -4,19 +4,6 @@
 
 @section('content')
 <div class="space-y-8">
-    <!-- Header banner -->
-    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-4 border-b border-zinc-200 dark:border-zinc-800">
-        <div>
-            <h1 class="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">Photography Timeline</h1>
-            <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
-                Visual log ordered chronologically by capture date with preserved EXIF camera details.
-            </p>
-        </div>
-        <div class="flex items-center gap-3 text-xs text-zinc-500 dark:text-zinc-400">
-            <span>{{ $images->total() }} {{ Str::plural('photograph', $images->total()) }} published</span>
-        </div>
-    </div>
-
     @if($images->isEmpty())
         <!-- Empty State -->
         <div class="py-24 text-center border border-dashed border-zinc-300 dark:border-zinc-800 rounded-2xl p-8 bg-zinc-50/50 dark:bg-zinc-900/30">
