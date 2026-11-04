@@ -8,133 +8,145 @@ use App\Models\Image;
 use App\Services\ImageService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\View\View;
 
 class ImageController extends Controller
 {
-	public function __construct(
-		protected ImageService $imageService,
-	) {}
+    public function __construct(
+        protected ImageService $imageService,
+    ) {}
 
-	/**
-	 * Display the chronological image gallery/timeline.
-	 */
-	public function index(Request $request): View
-	{
-		$page = (int) $request->input('page', 1);
-		$images = $this->imageService->getCachedTimeline(
-			page: $page,
-			perPage: 12,
-		);
-		$images->withPath($request->url())->withQueryString();
+    /**
+     * Display the chronological image gallery/timeline.
+     */
+    public function index(Request $request): View
+    {
+        $page = (int) $request->input('page', 1);
+        $images = $this->imageService->getCachedTimeline(
+            page: $page,
+            perPage: 12,
+        );
+        $images->withPath($request->url())->withQueryString();
 
-		return view('images.index', compact('images'));
-	}
+        return view('images.index', compact('images'));
+    }
 
-	/**
-	 * Show the upload image form.
-	 */
-	public function create(): View
-	{
-		return view('images.create');
-	}
+    /**
+     * Display the RSS feed for the latest photographs.
+     */
+    public function feed(): Response
+    {
+        $images = Image::query()->chronological()->limit(50)->get();
 
-	/**
-	 * Store a newly uploaded photograph.
-	 */
-	public function store(StoreImageRequest $request): RedirectResponse
-	{
-		try {
-			$image = $this->imageService->storeImage(
-				file: $request->file('image'),
-				title: $request->input('title'),
-				description: $request->input('description'),
-			);
+        return response()->view('feed', compact('images'), 200, [
+            'Content-Type' => 'application/rss+xml; charset=UTF-8',
+        ]);
+    }
 
-			// Invalidate timeline cache
-			$this->imageService->invalidateImageCache($image->slug);
+    /**
+     * Show the upload image form.
+     */
+    public function create(): View
+    {
+        return view('images.create');
+    }
 
-			return redirect()
-				->route('images.show', $image->slug)
-				->with('success', 'Photograph uploaded successfully!');
-		} catch (\Throwable $e) {
-			report($e);
+    /**
+     * Store a newly uploaded photograph.
+     */
+    public function store(StoreImageRequest $request): RedirectResponse
+    {
+        try {
+            $image = $this->imageService->storeImage(
+                file: $request->file('image'),
+                title: $request->input('title'),
+                description: $request->input('description'),
+            );
 
-			return back()
-				->withInput()
-				->withErrors([
-					'image' =>
-						'Failed to process and store image: '
-							. $e->getMessage(),
-				]);
-		}
-	}
+            // Invalidate timeline cache
+            $this->imageService->invalidateImageCache($image->slug);
 
-	/**
-	 * Display the individual image viewing page.
-	 */
-	public function show(string $slug, Request $request): View
-	{
-		$image = $this->imageService->getCachedImageBySlug($slug);
+            return redirect()
+                ->route('images.show', $image->slug)
+                ->with('success', 'Photograph uploaded successfully!');
+        } catch (\Throwable $e) {
+            report($e);
 
-		if (!$image) {
-			abort(404);
-		}
+            return back()
+                ->withInput()
+                ->withErrors([
+                    'image' => 'Failed to process and store image: '
+                            .$e->getMessage(),
+                ]);
+        }
+    }
 
-		// Check if GPS display is requested/configured
-		$showGpsConfig = config('images.show_gps_default', false);
-		$showGps = $request->boolean('show_gps', $showGpsConfig);
+    /**
+     * Display the individual image viewing page.
+     */
+    public function show(string $slug, Request $request): View
+    {
+        $image = $this->imageService->getCachedImageBySlug($slug);
 
-		return view('images.show', compact('image', 'showGps'));
-	}
+        if (! $image) {
+            abort(404);
+        }
 
-	/**
-	 * Show the form for editing an existing photograph's title and description.
-	 */
-	public function edit(string $slug): View
-	{
-		$image = Image::where('slug', $slug)->firstOrFail();
+        // Check if GPS display is requested/configured
+        $showGpsConfig = config('images.show_gps_default', false);
+        $showGps = $request->boolean('show_gps', $showGpsConfig);
 
-		return view('images.edit', compact('image'));
-	}
+        return view('images.show', compact('image', 'showGps'));
+    }
 
-	/**
-	 * Update an image's title and description.
-	 */
-	public function update(
-		UpdateImageRequest $request,
-		string $slug,
-	): RedirectResponse {
-		$image = Image::where('slug', $slug)->firstOrFail();
+    /**
+     * Show the form for editing an existing photograph's title and description.
+     */
+    public function edit(string $slug): View
+    {
+        $image = Image::where('slug', $slug)->firstOrFail();
 
-		$image->update([
-			'title' => $request->filled('title')
-				? trim($request->input('title'))
-				: null,
-			'description' => $request->filled('description')
-				? trim($request->input('description'))
-				: null,
-		]);
+        return view('images.edit', compact('image'));
+    }
 
-		// Invalidate both the individual image cache and timeline cache
-		$this->imageService->invalidateImageCache($image->slug);
+    /**
+     * Update an image's title and description.
+     */
+    public function update(
+        UpdateImageRequest $request,
+        string $slug,
+    ): RedirectResponse {
+        $image = Image::where('slug', $slug)->firstOrFail();
 
-		return redirect()
-			->route('images.show', $image->slug)
-			->with('success', 'Photograph details updated successfully.');
-	}
+        $image->update([
+            'title' => $request->filled('title')
+                ? trim($request->input('title'))
+                : null,
+            'description' => $request->filled('description')
+                ? trim($request->input('description'))
+                : null,
+        ]);
 
-	/**
-	 * Delete an existing photograph and its storage files.
-	 */
-	public function destroy(string $slug): RedirectResponse
-	{
-		$image = Image::where('slug', $slug)->firstOrFail();
+        // Invalidate both the individual image cache and timeline cache
+        $this->imageService->invalidateImageCache($image->slug);
 
-		$this->imageService->deleteImage($image);
+        return redirect()
+            ->route('images.show', $image->slug)
+            ->with('success', 'Photograph details updated successfully.');
+    }
 
-		return redirect()
-			->route('images.index')
-			->with('success', 'Photograph has been permanently deleted.');
-	}
+    /**
+     * Delete an existing photograph and its storage files.
+     */
+    public function destroy(string $slug): RedirectResponse
+    {
+        $image = Image::where('slug', $slug)->firstOrFail();
+
+        $this->imageService->deleteImage($image);
+
+        return redirect()
+            ->route('images.index')
+            ->with('success', 'Photograph has been permanently deleted.');
+    }
 }

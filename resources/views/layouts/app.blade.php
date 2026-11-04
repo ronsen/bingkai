@@ -6,6 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>@yield('title', config('app.name', 'Bingkai Photography'))</title>
+    <link rel="alternate" type="application/rss+xml" title="{{ config('app.name', 'Bingkai Photography') }} RSS Feed" href="{{ route('feed') }}">
 
     <!-- Theme initialization script to prevent flash of wrong theme -->
     <script>
@@ -116,6 +117,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
             <p>&copy; {{ date('Y') }} Bingkai.</p>
             <div class="flex items-center gap-4">
+                <a href="{{ route('feed') }}" class="hover:underline">RSS Feed</a>
                 @auth
                     <a href="{{ route('images.create') }}" class="hover:underline">Upload</a>
                 @else

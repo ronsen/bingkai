@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Route;
 
 // Public Gallery and Timeline
 Route::get('/', [ImageController::class, 'index'])->name('images.index');
+Route::get('/feed', [ImageController::class, 'feed'])->name('feed');
 
 // Authentication routes (Magic Link Sign In & Sign Out)
 Route::middleware('guest')->group(function () {
@@ -36,17 +37,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/upload', [ImageController::class, 'create'])->name('images.create');
     Route::post('/images', [ImageController::class, 'store'])->name('images.store');
     Route::get('/{slug}/edit', [ImageController::class, 'edit'])
-        ->where('slug', '^(?!upload|images|storage|build|_boost|up|login|logout|profile)[^/]+$')
+        ->where('slug', '^(?!upload|images|storage|build|_boost|up|login|logout|profile|feed)[^/]+$')
         ->name('images.edit');
     Route::patch('/{slug}', [ImageController::class, 'update'])
-        ->where('slug', '^(?!upload|images|storage|build|_boost|up|login|logout|profile)[^/]+$')
+        ->where('slug', '^(?!upload|images|storage|build|_boost|up|login|logout|profile|feed)[^/]+$')
         ->name('images.update');
     Route::delete('/{slug}', [ImageController::class, 'destroy'])
-        ->where('slug', '^(?!upload|images|storage|build|_boost|up|login|logout|profile)[^/]+$')
+        ->where('slug', '^(?!upload|images|storage|build|_boost|up|login|logout|profile|feed)[^/]+$')
         ->name('images.destroy');
 });
 
 // Public Individual Viewing
 Route::get('/{slug}', [ImageController::class, 'show'])
-    ->where('slug', '^(?!upload|images|storage|build|_boost|up|login|logout|profile)[^/]+$')
+    ->where('slug', '^(?!upload|images|storage|build|_boost|up|login|logout|profile|feed)[^/]+$')
     ->name('images.show');

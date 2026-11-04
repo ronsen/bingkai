@@ -142,6 +142,10 @@ storage/app/public/images/{random-string}.webp
 
 No per-image subdirectory is created. Only the optimized preview is kept; the uploaded source file is discarded after processing.
 
+## RSS feed
+
+The latest 50 photographs are available in RSS 2.0 format at `/feed`. The feed is linked from the site header for feed-reader autodiscovery and from the footer.
+
 ## Configuration
 
 Key image-related environment variables:
