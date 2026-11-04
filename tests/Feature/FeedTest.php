@@ -17,7 +17,21 @@ test('the rss feed lists images newest first', function () {
         ->assertSeeInOrder(['Second Photo', 'First Photo']);
 });
 
-test('the gallery lists images newest first by id', function () {
+test('the rss feed response is cached', function () {
+    Cache::flush();
+
+    $image = Image::factory()->create(['title' => 'Cached Photo']);
+
+    $this->get(route('feed'))->assertSee('Cached Photo');
+
+    $image->update(['title' => 'Updated Photo']);
+
+    $this->get(route('feed'))
+        ->assertSee('Cached Photo')
+        ->assertDontSee('Updated Photo');
+});
+
+test('the gallery lists images newest first by taken date', function () {
     Cache::flush();
 
     Image::factory()->create([
@@ -31,5 +45,5 @@ test('the gallery lists images newest first by id', function () {
 
     $this->get(route('images.index'))
         ->assertOk()
-        ->assertSeeInOrder(['Second Photo', 'First Photo']);
+        ->assertSeeInOrder(['First Photo', 'Second Photo']);
 });

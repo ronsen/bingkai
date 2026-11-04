@@ -145,6 +145,6 @@ class Image extends Model
      */
     public function scopeChronological($query)
     {
-        return $query->orderByDesc('id');
+        return $query->orderByDesc('taken_at');
     }
 }
