@@ -48,7 +48,7 @@
                             class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-out"
                         />
                         <!-- Subtle gradient hover overlay -->
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                        <div class="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
                             <span class="text-xs text-white/90 font-medium">View photograph &rarr;</span>
                         </div>
                     </a>
@@ -60,7 +60,7 @@
                                     {{ $image->taken_at ? $image->taken_at->format('M d, Y') : 'Unknown Date' }}
                                 </span>
                                 @if($image->camera_display)
-                                    <span class="truncate max-w-[130px]" title="{{ $image->camera_display }}">
+                                    <span class="truncate max-w-32.5" title="{{ $image->camera_display }}">
                                         {{ $image->camera_display }}
                                     </span>
                                 @endif

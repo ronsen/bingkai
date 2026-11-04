@@ -58,7 +58,7 @@
     </div>
 
     <!-- Main Photograph Display (Standard Definition Optimized Version) -->
-    <section class="relative bg-zinc-950 rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl ring-1 ring-zinc-900/10 dark:ring-zinc-800 flex items-center justify-center min-h-[350px] sm:min-h-[500px]">
+    <section class="relative bg-zinc-950 rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl ring-1 ring-zinc-900/10 dark:ring-zinc-800 flex items-center justify-center min-h-87.5 sm:min-h-125">
         <img
             src="{{ $image->standard_url }}"
             alt="{{ $image->display_title }}"
