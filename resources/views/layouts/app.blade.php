@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title', config('app.name', 'Bingkai Photography'))</title>
-    <link rel="alternate" type="application/rss+xml" title="{{ config('app.name', 'Bingkai Photography') }} RSS Feed" href="{{ route('feed') }}">
+    <title>@yield('title', config('app.name', 'Bingkai'))</title>
+    <link rel="alternate" type="application/rss+xml" title="{{ config('app.name', 'Bingkai') }} RSS Feed" href="{{ route('feed') }}">
 
     <!-- Theme initialization script to prevent flash of wrong theme -->
     <script>
@@ -117,7 +117,8 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
             <p>&copy; {{ date('Y') }} Bingkai.</p>
             <div class="flex items-center gap-4">
-                <a href="{{ route('feed') }}" class="hover:underline">RSS Feed</a>
+				<a href="https://github.com/ronsen/bingkai" target="_blank">Source code</a>
+                <a href="{{ route('feed') }}" class="hover:underline">RSS feed</a>
             </div>
         </div>
     </footer>

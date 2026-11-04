@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Account Settings — Bingkai Photography')
+@section('title', 'Account Settings — Bingkai')
 
 @section('content')
 <div class="max-w-3xl mx-auto space-y-8">

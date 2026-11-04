@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Edit ' . $image->display_title . ' — Bingkai Photography')
+@section('title', 'Edit ' . $image->display_title . ' — Bingkai')
 
 @section('content')
 <div class="max-w-2xl mx-auto">

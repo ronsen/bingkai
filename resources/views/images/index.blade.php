@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Gallery & Timeline — Bingkai Photography')
+@section('title', 'Bingkai')
 
 @section('content')
 <div class="space-y-8">
