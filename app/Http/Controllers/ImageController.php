@@ -8,9 +8,7 @@ use App\Models\Image;
 use App\Services\ImageService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ImageController extends Controller
 {
@@ -125,30 +123,5 @@ class ImageController extends Controller
         return redirect()
             ->route('images.index')
             ->with('success', 'Photograph has been permanently deleted.');
-    }
-
-    /**
-     * Download the original, untouched, full-resolution image.
-     */
-    public function download(string $slug): StreamedResponse
-    {
-        $image = $this->imageService->getCachedImageBySlug($slug);
-
-        if (! $image) {
-            abort(404);
-        }
-
-        $disk = config('images.disk', 'public');
-
-        if (! Storage::disk($disk)->exists($image->original_path)) {
-            abort(404, 'Original image file not found.');
-        }
-
-        $extension = pathinfo($image->original_path, PATHINFO_EXTENSION) ?: 'jpg';
-        $downloadFilename = ($image->slug ?: 'photo').'.'.$extension;
-
-        return Storage::disk($disk)->download($image->original_path, $downloadFilename, [
-            'Content-Type' => $image->mime_type,
-        ]);
     }
 }

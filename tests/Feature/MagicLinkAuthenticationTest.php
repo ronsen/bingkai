@@ -11,7 +11,7 @@ test('the login page displays the magic link form', function () {
     $this->get(route('login'))
         ->assertOk()
         ->assertSee('Email Me a Sign-In Link')
-        ->assertSee('Create one');
+        ->assertDontSee('Create one');
 });
 
 test('a magic link is sent to an existing user', function () {

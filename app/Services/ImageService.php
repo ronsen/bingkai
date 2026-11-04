@@ -29,31 +29,15 @@ class ImageService
      */
     public function storeImage(UploadedFile $file, ?string $title = null, ?string $description = null): ImageModel
     {
-        $disk = config('images.disk', 'public');
         $uuid = (string) Str::uuid();
 
         // Generate unique slug
         $slug = $this->generateSlug($title, $uuid);
 
-        // Determine filenames and paths
-        $extension = strtolower($file->getClientOriginalExtension());
-        if (empty($extension)) {
-            $extension = 'jpg';
-        }
-
-        $folder = 'images/'.$uuid;
-        $originalFilename = $this->generateOriginalFilename($extension);
-        $standardFilename = 'standard.webp';
-
-        $originalPath = $folder.'/'.$originalFilename;
-        $standardPath = $folder.'/'.$standardFilename;
-
-        // 1. Store original full-resolution image untouched
-        $fileSize = $file->getSize();
         $mimeType = $file->getMimeType() ?: 'image/jpeg';
         $realPath = $file->getRealPath();
 
-        // Extract EXIF metadata from original file before moving/processing
+        // Extract EXIF metadata from the uploaded source file
         $exifData = $this->exifReader->extract($realPath);
 
         // Read dimensions using getimagesize
@@ -61,22 +45,17 @@ class ImageService
         $width = $imageSize ? (int) $imageSize[0] : null;
         $height = $imageSize ? (int) $imageSize[1] : null;
 
-        // Store original to disk
-        Storage::disk($disk)->putFileAs($folder, $file, $originalFilename);
-
         // Fall back taken_at to current timestamp if not available in EXIF
         $takenAt = $exifData['taken_at'] ?? now();
 
-        // 2. Create the Database Record
+        // 1. Create the Database Record
         $imageRecord = ImageModel::create([
             'uuid' => $uuid,
             'slug' => $slug,
             'title' => $title ? trim($title) : null,
             'description' => $description ? trim($description) : null,
-            'original_path' => $originalPath,
-            'standard_path' => null, // Set after SD generation succeeds
+            'filename' => null, // Set after preview generation succeeds
             'mime_type' => $mimeType,
-            'file_size' => $fileSize,
             'width' => $width,
             'height' => $height,
             'taken_at' => $takenAt,
@@ -91,9 +70,9 @@ class ImageService
             'gps_longitude' => $exifData['gps_longitude'],
         ]);
 
-        // 3. Generate SD variant
-        // Ensure that failure in SD generation does not corrupt or lose the original
-        $this->generateStandardVariant($imageRecord, $standardPath);
+        // 2. Generate the optimized preview. The uploaded source file is not retained.
+        $filename = Str::random(40).'.webp';
+        $this->generateStandardVariant($imageRecord, $realPath, $filename);
 
         return $imageRecord;
     }
@@ -101,14 +80,15 @@ class ImageService
     /**
      * Generate the optimized Standard Definition (SD) image variant.
      */
-    public function generateStandardVariant(ImageModel $imageRecord, ?string $targetPath = null): bool
+    public function generateStandardVariant(ImageModel $imageRecord, string $sourcePath, ?string $filename = null): bool
     {
         $disk = config('images.disk', 'public');
-        $targetPath = $targetPath ?: 'images/'.$imageRecord->uuid.'/standard.webp';
+        $filename = $filename ?: Str::random(40).'.webp';
+        $targetPath = 'images/'.$filename;
 
         try {
-            $originalContent = Storage::disk($disk)->get($imageRecord->original_path);
-            if (! $originalContent) {
+            $sourceContent = @file_get_contents($sourcePath);
+            if ($sourceContent === false) {
                 return false;
             }
 
@@ -116,7 +96,7 @@ class ImageService
             $quality = (int) config('images.quality', 85);
 
             // Read image from memory
-            $image = $this->imageManager->decode($originalContent);
+            $image = $this->imageManager->decode($sourceContent);
 
             // Auto-orient according to EXIF orientation
             $image->orient();
@@ -132,7 +112,7 @@ class ImageService
 
             // Update model
             $imageRecord->update([
-                'standard_path' => $targetPath,
+                'filename' => $filename,
             ]);
 
             $this->invalidateImageCache($imageRecord->slug);
@@ -143,14 +123,6 @@ class ImageService
 
             return false;
         }
-    }
-
-    /**
-     * Generate an unguessable filename for an original full-resolution image.
-     */
-    public function generateOriginalFilename(string $extension): string
-    {
-        return Str::uuid().'.'.Str::lower($extension);
     }
 
     /**
@@ -179,10 +151,11 @@ class ImageService
     public function deleteImage(ImageModel $image): bool
     {
         $disk = config('images.disk', 'public');
-        $folder = 'images/'.$image->uuid;
+        $storage = Storage::disk($disk);
 
-        // Delete all stored variants and folder
-        Storage::disk($disk)->deleteDirectory($folder);
+        if ($image->preview_path) {
+            $storage->delete($image->preview_path);
+        }
 
         $this->invalidateImageCache($image->slug);
 

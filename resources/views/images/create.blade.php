@@ -13,7 +13,7 @@
         </a>
         <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">Upload Photograph</h1>
         <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
-            Original images are stored without quality loss. EXIF metadata will be automatically detected and extracted.
+            Uploads are converted to an optimized WebP preview. EXIF metadata will be automatically detected and extracted.
         </p>
     </div>
 
@@ -60,7 +60,7 @@
                         <span class="text-sm text-zinc-500 dark:text-zinc-400"> or drag and drop</span>
                     </div>
                     <p class="text-xs text-zinc-400 dark:text-zinc-500">
-                        JPEG, PNG, or WebP up to 25MB. Original EXIF metadata will be preserved.
+                        JPEG, PNG, or WebP up to 25MB. EXIF metadata will be preserved.
                     </p>
                 </div>
 

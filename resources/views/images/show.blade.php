@@ -14,7 +14,7 @@
         </a>
 
         <div class="flex items-center gap-2">
-            @if (auth()->user()?->isAdmin())
+            @auth
                 <!-- Edit Photograph -->
                 <a
                     href="{{ route('images.edit', $image->slug) }}"
@@ -40,32 +40,6 @@
                         <span>Delete</span>
                     </button>
                 </form>
-            @endif
-
-            <!-- Download Action -->
-            @auth
-                <a
-                    href="{{ route('images.download', $image->slug) }}"
-                    class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-white shadow-sm transition-all hover:scale-[1.02] active:scale-[0.98]"
-                    title="Download full resolution file ({{ $image->formatted_file_size }})"
-                >
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
-                    </svg>
-                    <span>Download Original</span>
-                    <span class="opacity-75 font-mono">({{ $image->formatted_file_size }})</span>
-                </a>
-            @else
-                <a
-                    href="{{ route('images.download', $image->slug) }}"
-                    class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-700 shadow-sm transition-all"
-                    title="Sign in to download the full resolution file"
-                >
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-                    </svg>
-                    <span>Sign in to download</span>
-                </a>
             @endauth
         </div>
     </div>
@@ -109,36 +83,6 @@
                 </div>
             @endif
 
-            <!-- Download callout block -->
-            <div class="p-4 rounded-2xl bg-zinc-100/80 dark:bg-zinc-900/80 border border-zinc-200 dark:border-zinc-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <div>
-                    <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Original Photograph File</h3>
-                    <p class="text-xs text-zinc-600 dark:text-zinc-400 mt-0.5">
-                        Preserves untouched camera dimensions, full color depth, and complete EXIF headers.
-                    </p>
-                </div>
-                @auth
-                    <a
-                        href="{{ route('images.download', $image->slug) }}"
-                        class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors shrink-0"
-                    >
-                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
-                        </svg>
-                        Download ({{ $image->formatted_file_size }})
-                    </a>
-                @else
-                    <a
-                        href="{{ route('images.download', $image->slug) }}"
-                        class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors shrink-0"
-                    >
-                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-                        </svg>
-                        Sign in to download
-                    </a>
-                @endauth
-            </div>
         </div>
 
         <!-- Right Col: Technical EXIF Metadata Box -->
@@ -200,15 +144,10 @@
 
                     @if($image->width && $image->height)
                         <div class="flex items-center justify-between font-mono">
-                            <dt class="text-zinc-500 dark:text-zinc-400 font-sans">Original Dimensions</dt>
+                            <dt class="text-zinc-500 dark:text-zinc-400 font-sans">Dimensions</dt>
                             <dd class="font-medium text-zinc-900 dark:text-zinc-100">{{ $image->width }} &times; {{ $image->height }} px</dd>
                         </div>
                     @endif
-
-                    <div class="flex items-center justify-between font-mono">
-                        <dt class="text-zinc-500 dark:text-zinc-400 font-sans">File Size</dt>
-                        <dd class="font-medium text-zinc-900 dark:text-zinc-100">{{ $image->formatted_file_size }}</dd>
-                    </div>
 
                     <div class="flex items-center justify-between font-mono">
                         <dt class="text-zinc-500 dark:text-zinc-400 font-sans">Format</dt>

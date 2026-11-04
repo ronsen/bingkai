@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Image;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
  * @extends Factory<Image>
@@ -24,10 +25,8 @@ class ImageFactory extends Factory
             'slug' => fake()->unique()->slug(),
             'title' => fake()->sentence(3),
             'description' => fake()->optional()->paragraph(),
-            'original_path' => "images/{$uuid}/".fake()->uuid().'.jpg',
-            'standard_path' => "images/{$uuid}/standard.webp",
+            'filename' => Str::random(40).'.webp',
             'mime_type' => 'image/jpeg',
-            'file_size' => fake()->numberBetween(100_000, 5_000_000),
             'width' => fake()->numberBetween(800, 4000),
             'height' => fake()->numberBetween(600, 3000),
             'taken_at' => fake()->dateTimeBetween('-5 years'),

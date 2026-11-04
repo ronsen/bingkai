@@ -1,6 +1,6 @@
 # Bingkai Photography
 
-Bingkai is a Laravel-powered photography gallery and timeline. It preserves original high-resolution photographs and EXIF metadata while serving optimized previews to visitors. Sign-in is passwordless, image management is restricted to administrators, and full-resolution downloads require an authenticated account.
+Bingkai is a Laravel-powered photography gallery and timeline. It stores optimized WebP previews alongside the EXIF metadata extracted from each upload. Sign-in is passwordless, and any signed-in user can manage photographs.
 
 ## Features
 
@@ -10,32 +10,27 @@ Bingkai is a Laravel-powered photography gallery and timeline. It preserves orig
 - Responsive gallery and image detail pages with light and dark themes.
 - Automatic EXIF extraction and display: camera make/model, lens, exposure time, aperture, ISO, focal length, dimensions, and capture date.
 - GPS coordinates are hidden by default and can be revealed per image.
-- Optimized WebP previews are generated automatically while the original file remains untouched.
+- Optimized WebP previews are generated automatically from each upload.
 
-### Accounts and roles
+### Accounts
 
-| Role | Access |
-| --- | --- |
-| **Admin** | Upload, edit, and delete photographs. Browse, download originals, and manage their profile. |
-| **User** | Browse the gallery, download originals, and manage their profile. |
-| **Guest** | Browse the public gallery. Must sign in to download originals. |
+Visitors can browse the public gallery. Signed-in users can upload, edit, and delete photographs, and manage their profile.
 
 Authentication uses email magic links:
 
 - Sign-in is passwordless: enter an email address and receive a signed, single-use link.
 - Links expire after **15 minutes** and become invalid after first use.
-- New accounts can be created from the registration page.
+- Self-registration is disabled. Accounts are provisioned by the seeder or created manually.
 - Accounts are created without a password. A password can optionally be set later from the profile page.
 - Successful magic-link sign-in marks the email address as verified.
 
 ### Image management
 
-- Only administrators can upload, edit, or delete photographs.
+- Any signed-in user can upload, edit, or delete photographs.
 - Uploads accept JPEG, PNG, and WebP files up to 25 MB by default.
-- The original full-resolution file is stored unchanged.
-- A resized WebP preview (1920 px maximum dimension by default) is generated for the public gallery.
-- Original files are stored with unguessable UUID filenames.
-- Full-resolution downloads are served only to authenticated users.
+- Each upload is converted to a resized WebP preview (1920 px maximum dimension by default).
+- The uploaded source file is not retained after preview generation.
+- EXIF metadata is extracted from the upload and stored with the image record.
 - Timeline and individual image responses are cached to reduce database load.
 
 ### User profile
@@ -164,39 +159,31 @@ The script does not seed users or create the storage symlink, so run those two c
 
 ## Seeded accounts
 
-`php artisan migrate --seed` creates two local accounts:
+`php artisan migrate --seed` creates one local account:
 
-| Email | Role |
-| --- | --- |
-| `test@example.com` | User |
-| `admin@example.com` | Admin |
+| Email |
+| --- |
+| `test@example.com` |
 
-Password login is disabled. Sign in by requesting a magic link for either address. With `MAIL_MAILER=log`, the link appears in `storage/logs/laravel.log`.
+Password login is disabled. Sign in by requesting a magic link for that address. With `MAIL_MAILER=log`, the link appears in `storage/logs/laravel.log`.
 
-## Managing roles
-
-New registrations receive the `user` role. Administrators can be created through the seeder or promoted from the command line:
+To add another account, create it manually:
 
 ```bash
-php artisan tinker --execute 'App\Models\User::where("email", "you@example.com")->first()->update(["role" => App\Enums\Role::Admin]);'
+php artisan tinker --execute 'App\Models\User::create(["name" => "Your Name", "email" => "you@example.com"]);'
 ```
 
-The available roles are defined in `app/Enums/Role.php`:
+## Image storage
 
-- `admin`
-- `user`
-- `guest`
+Generated previews are stored on the disk configured by `IMAGE_STORAGE_DISK` (default: `public`).
 
-## Image storage and maintenance
-
-Originals and generated previews are stored on the disk configured by `IMAGE_STORAGE_DISK` (default: `public`).
-
-New uploads are stored as:
+New uploads are stored directly in the `images` directory. A random filename (`{random-string}.webp`) is generated and recorded in the `images.filename` column:
 
 ```text
-storage/app/public/images/{image-uuid}/{random-uuid}.{extension}   # original
-storage/app/public/images/{image-uuid}/standard.webp               # optimized preview
+storage/app/public/images/{random-string}.webp
 ```
+
+No per-image subdirectory is created. Only the optimized preview is kept; the uploaded source file is discarded after processing.
 
 ## Configuration
 
@@ -204,7 +191,7 @@ Key image-related environment variables:
 
 | Variable | Default | Description |
 | --- | --- | --- |
-| `IMAGE_STORAGE_DISK` | `public` | Filesystem disk used for originals and previews |
+| `IMAGE_STORAGE_DISK` | `public` | Filesystem disk used for generated previews |
 | `IMAGE_MAX_DIMENSION` | `1920` | Maximum width or height of generated previews |
 | `IMAGE_QUALITY` | `85` | WebP preview quality |
 | `IMAGE_MAX_UPLOAD_SIZE` | `25600` | Maximum upload size in kilobytes (25 MB) |
@@ -251,12 +238,10 @@ composer run test
 ## Security notes
 
 - Magic links are temporary signed URLs, expire after 15 minutes, and are single-use.
-- Image management routes require the `admin` role.
-- Full-resolution downloads require an authenticated session.
-- Original filenames are randomized so visitors cannot guess the high-resolution file URL.
+- Image management routes require an authenticated session.
 - Uploaded files are validated by content type, size, and image format.
+- Uploaded source files are discarded after the optimized preview is generated.
 - GPS coordinates are hidden by default.
-- Public previews never fall back to exposing the original file path.
 
 ## License
 

@@ -16,13 +16,13 @@
             <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1 max-w-sm mx-auto">
                 Start sharing high-resolution photographs with automatic optimization and metadata extraction.
             </p>
-            @if (auth()->user()?->isAdmin())
+            @auth
                 <div class="mt-6">
                     <a href="{{ route('images.create') }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-white shadow transition-all">
                         Upload Your First Photo
                     </a>
                 </div>
-            @endif
+            @endauth
         </div>
     @else
         <!-- Grid / Masonry gallery layout -->
@@ -79,7 +79,6 @@
                                     <span class="px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800">ISO {{ $image->iso }}</span>
                                 @endif
                             </div>
-                            <span class="text-zinc-400">{{ $image->formatted_file_size }}</span>
                         </div>
                     </div>
                 </article>

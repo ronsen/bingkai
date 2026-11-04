@@ -17,10 +17,8 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->string('title')->nullable();
             $table->text('description')->nullable();
-            $table->string('original_path');
-            $table->string('standard_path')->nullable();
+            $table->string('filename')->nullable();
             $table->string('mime_type', 100);
-            $table->unsignedBigInteger('file_size');
             $table->unsignedInteger('width')->nullable();
             $table->unsignedInteger('height')->nullable();
             $table->timestamp('taken_at')->nullable()->index();

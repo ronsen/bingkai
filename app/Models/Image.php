@@ -21,10 +21,8 @@ class Image extends Model
         'slug',
         'title',
         'description',
-        'original_path',
-        'standard_path',
+        'filename',
         'mime_type',
-        'file_size',
         'width',
         'height',
         'taken_at',
@@ -48,7 +46,6 @@ class Image extends Model
     {
         return [
             'taken_at' => 'datetime',
-            'file_size' => 'integer',
             'width' => 'integer',
             'height' => 'integer',
             'iso' => 'integer',
@@ -66,12 +63,20 @@ class Image extends Model
     }
 
     /**
-     * Get the URL for the Standard Definition variant.
-     * Falls back to a neutral placeholder if the standard variant is unavailable.
+     * Get the storage path for the optimized preview.
+     */
+    public function getPreviewPathAttribute(): ?string
+    {
+        return $this->filename ? 'images/'.$this->filename : null;
+    }
+
+    /**
+     * Get the URL for the optimized preview.
+     * Falls back to a neutral placeholder if the preview is unavailable.
      */
     public function getStandardUrlAttribute(): string
     {
-        if (! $this->standard_path) {
+        if (! $this->preview_path) {
             return 'data:image/svg+xml;charset=UTF-8,'.rawurlencode(
                 '<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800"><rect width="100%" height="100%" fill="#e4e4e7"/><text x="50%" y="50%" fill="#71717a" font-family="sans-serif" font-size="32" text-anchor="middle" dominant-baseline="middle">Preview unavailable</text></svg>'
             );
@@ -79,31 +84,7 @@ class Image extends Model
 
         $disk = config('images.disk', 'public');
 
-        return Storage::disk($disk)->url($this->standard_path);
-    }
-
-    /**
-     * Get the authenticated download URL for the original full-resolution image.
-     */
-    public function getOriginalUrlAttribute(): string
-    {
-        return route('images.download', $this->slug);
-    }
-
-    /**
-     * Human-readable formatted file size.
-     */
-    public function getFormattedFileSizeAttribute(): string
-    {
-        $bytes = $this->file_size;
-        if ($bytes >= 1048576) {
-            return number_format($bytes / 1048576, 2).' MB';
-        }
-        if ($bytes >= 1024) {
-            return number_format($bytes / 1024, 1).' KB';
-        }
-
-        return $bytes.' B';
+        return Storage::disk($disk)->url($this->preview_path);
     }
 
     /**

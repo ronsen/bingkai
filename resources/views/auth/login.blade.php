@@ -61,12 +61,5 @@
             </button>
         </form>
     </div>
-
-    <p class="text-center text-xs text-zinc-500 dark:text-zinc-400 mt-6">
-        Don't have an account?
-        <a href="{{ route('register') }}" class="font-semibold text-zinc-900 dark:text-zinc-100 hover:underline">
-            Create one
-        </a>
-    </p>
 </div>
 @endsection
