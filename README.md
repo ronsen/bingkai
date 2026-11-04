@@ -1,43 +1,4 @@
-# Bingkai Photography
-
-Bingkai is a Laravel-powered photography gallery and timeline. It stores optimized WebP previews alongside the EXIF metadata extracted from each upload. Sign-in is passwordless, and any signed-in user can manage photographs.
-
-## Features
-
-### Public gallery and timeline
-
-- Chronological photography timeline with pagination.
-- Responsive gallery and image detail pages with light and dark themes.
-- Automatic EXIF extraction and display: camera make/model, lens, exposure time, aperture, ISO, focal length, dimensions, and capture date.
-- GPS coordinates are hidden by default and can be revealed per image.
-- Optimized WebP previews are generated automatically from each upload.
-
-### Accounts
-
-Visitors can browse the public gallery. Signed-in users can upload, edit, and delete photographs, and manage their profile.
-
-Authentication uses email magic links:
-
-- Sign-in is passwordless: enter an email address and receive a signed, single-use link.
-- Links expire after **15 minutes** and become invalid after first use.
-- Self-registration is disabled. Accounts are provisioned by the seeder or created manually.
-- Accounts are created without a password. A password can optionally be set later from the profile page.
-- Successful magic-link sign-in marks the email address as verified.
-
-### Image management
-
-- Any signed-in user can upload, edit, or delete photographs.
-- Uploads accept JPEG, PNG, and WebP files up to 25 MB by default.
-- Each upload is converted to a resized WebP preview (1920 px maximum dimension by default).
-- The uploaded source file is not retained after preview generation.
-- EXIF metadata is extracted from the upload and stored with the image record.
-- Timeline and individual image responses are cached to reduce database load.
-
-### User profile
-
-- Update display name and email address.
-- Optionally set or update an account password.
-- Existing passwords require the current password before changing.
+# Bingkai
 
 ## Tech stack
 
@@ -91,7 +52,7 @@ touch database/database.sqlite
 Then run the migrations and seeders:
 
 ```bash
-php artisan migrate --seed
+php artisan migrate
 ```
 
 To use MySQL or PostgreSQL instead, update the `DB_*` values in `.env` and run the same migration command.
@@ -158,12 +119,6 @@ php artisan storage:link
 The script does not seed users or create the storage symlink, so run those two commands afterward.
 
 ## Seeded accounts
-
-`php artisan migrate --seed` creates one local account:
-
-| Email |
-| --- |
-| `test@example.com` |
 
 Password login is disabled. Sign in by requesting a magic link for that address. With `MAIL_MAILER=log`, the link appears in `storage/logs/laravel.log`.
 
