@@ -77,9 +77,15 @@
     <!-- Update Password Section -->
     <div class="bg-white dark:bg-zinc-900/90 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 p-6 sm:p-8 shadow-xs">
         <div class="mb-6 pb-4 border-b border-zinc-100 dark:border-zinc-800">
-            <h2 class="text-base font-semibold text-zinc-900 dark:text-zinc-100">Update Password</h2>
+            <h2 class="text-base font-semibold text-zinc-900 dark:text-zinc-100">
+                {{ $user->password ? 'Update Password' : 'Set a Password' }}
+            </h2>
             <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
-                Ensure your account is using a long, random password to stay secure.
+                @if ($user->password)
+                    Your account signs in with magic links. You may update the password stored on your account here.
+                @else
+                    Your account is passwordless and signs in with magic links. You may optionally set a password here.
+                @endif
             </p>
         </div>
 
@@ -87,20 +93,22 @@
             @csrf
             @method('PUT')
 
-            <div>
-                <label for="current_password" class="block text-xs font-semibold uppercase tracking-wider text-zinc-600 dark:text-zinc-400 mb-1.5">
-                    Current Password
-                </label>
-                <input
-                    type="password"
-                    name="current_password"
-                    id="current_password"
-                    required
-                    autocomplete="current-password"
-                    class="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 text-sm"
-                    placeholder="••••••••"
-                />
-            </div>
+            @if ($user->password)
+                <div>
+                    <label for="current_password" class="block text-xs font-semibold uppercase tracking-wider text-zinc-600 dark:text-zinc-400 mb-1.5">
+                        Current Password
+                    </label>
+                    <input
+                        type="password"
+                        name="current_password"
+                        id="current_password"
+                        required
+                        autocomplete="current-password"
+                        class="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 text-sm"
+                        placeholder="••••••••"
+                    />
+                </div>
+            @endif
 
             <div>
                 <label for="password" class="block text-xs font-semibold uppercase tracking-wider text-zinc-600 dark:text-zinc-400 mb-1.5">
@@ -137,7 +145,7 @@
                     type="submit"
                     class="px-4 py-2 rounded-xl text-xs font-semibold bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-white shadow-xs transition-all hover:scale-[1.01] active:scale-[0.99]"
                 >
-                    Update Password
+                    {{ $user->password ? 'Update Password' : 'Set Password' }}
                 </button>
             </div>
         </form>

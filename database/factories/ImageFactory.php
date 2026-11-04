@@ -17,8 +17,29 @@ class ImageFactory extends Factory
      */
     public function definition(): array
     {
+        $uuid = fake()->uuid();
+
         return [
-            //
+            'uuid' => $uuid,
+            'slug' => fake()->unique()->slug(),
+            'title' => fake()->sentence(3),
+            'description' => fake()->optional()->paragraph(),
+            'original_path' => "images/{$uuid}/".fake()->uuid().'.jpg',
+            'standard_path' => "images/{$uuid}/standard.webp",
+            'mime_type' => 'image/jpeg',
+            'file_size' => fake()->numberBetween(100_000, 5_000_000),
+            'width' => fake()->numberBetween(800, 4000),
+            'height' => fake()->numberBetween(600, 3000),
+            'taken_at' => fake()->dateTimeBetween('-5 years'),
+            'camera_make' => fake()->optional()->randomElement(['Canon', 'Nikon', 'Sony']),
+            'camera_model' => fake()->optional()->word(),
+            'lens_model' => fake()->optional()->word(),
+            'exposure_time' => fake()->optional()->randomElement(['1/125', '1/250', '1/500']),
+            'aperture' => fake()->optional()->randomElement(['f/1.8', 'f/2.8', 'f/4']),
+            'iso' => fake()->optional()->randomElement([100, 200, 400, 800]),
+            'focal_length' => fake()->optional()->randomElement(['35mm', '50mm', '85mm']),
+            'gps_latitude' => null,
+            'gps_longitude' => null,
         ];
     }
 }

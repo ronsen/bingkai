@@ -52,14 +52,16 @@
                     </svg>
                 </button>
 
-                <!-- Publish / Upload Button (Authenticated users only) -->
+                <!-- Publish / Upload Button (Admins and standard users only) -->
                 @auth
-                    <a href="{{ route('images.create') }}" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-sm font-medium bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-white shadow-sm transition-all hover:scale-[1.02] active:scale-[0.98]">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.5v15m7.5-7.5h-15" />
-                        </svg>
-                        <span>Upload</span>
-                    </a>
+                    @if (auth()->user()->isAdmin())
+                        <a href="{{ route('images.create') }}" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-sm font-medium bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-white shadow-sm transition-all hover:scale-[1.02] active:scale-[0.98]">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.5v15m7.5-7.5h-15" />
+                            </svg>
+                            <span>Upload</span>
+                        </a>
+                    @endif
                 @endauth
 
                 <!-- User Auth Status -->
@@ -92,6 +94,12 @@
                     >
                         Sign In
                     </a>
+                    <a
+                        href="{{ route('register') }}"
+                        class="px-3.5 py-1.5 rounded-lg text-sm font-medium bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-white shadow-sm transition-all hover:scale-[1.02] active:scale-[0.98]"
+                    >
+                        Sign Up
+                    </a>
                 @endauth
             </div>
         </div>
@@ -123,9 +131,12 @@
             <div class="flex items-center gap-4">
                 <a href="{{ route('images.index') }}" class="hover:underline">Gallery</a>
                 @auth
-                    <a href="{{ route('images.create') }}" class="hover:underline">Upload</a>
+                    @if (auth()->user()->isAdmin())
+                        <a href="{{ route('images.create') }}" class="hover:underline">Upload</a>
+                    @endif
                 @else
                     <a href="{{ route('login') }}" class="hover:underline">Sign In</a>
+                    <a href="{{ route('register') }}" class="hover:underline">Sign Up</a>
                 @endauth
             </div>
         </div>

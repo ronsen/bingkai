@@ -29,11 +29,13 @@
             <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1 max-w-sm mx-auto">
                 Start sharing high-resolution photographs with automatic optimization and metadata extraction.
             </p>
-            <div class="mt-6">
-                <a href="{{ route('images.create') }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-white shadow transition-all">
-                    Upload Your First Photo
-                </a>
-            </div>
+            @if (auth()->user()?->isAdmin())
+                <div class="mt-6">
+                    <a href="{{ route('images.create') }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-white shadow transition-all">
+                        Upload Your First Photo
+                    </a>
+                </div>
+            @endif
         </div>
     @else
         <!-- Grid / Masonry gallery layout -->

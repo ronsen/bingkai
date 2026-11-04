@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\View\View;
@@ -48,17 +47,24 @@ class ProfileController extends Controller
     }
 
     /**
-     * Update the user password.
+     * Set or update the user password.
      */
     public function updatePassword(Request $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'current_password' => ['required', 'current_password'],
-            'password' => ['required', 'confirmed', Password::defaults()],
-        ]);
+        $user = $request->user();
 
-        $request->user()->update([
-            'password' => Hash::make($validated['password']),
+        $rules = [
+            'password' => ['required', 'confirmed', Password::defaults()],
+        ];
+
+        if ($user->password !== null) {
+            $rules['current_password'] = ['required', 'current_password'];
+        }
+
+        $validated = $request->validate($rules);
+
+        $user->update([
+            'password' => $validated['password'],
         ]);
 
         return redirect()->route('profile.edit')

@@ -42,7 +42,7 @@ class ImageService
         }
 
         $folder = 'images/'.$uuid;
-        $originalFilename = 'original.'.$extension;
+        $originalFilename = $this->generateOriginalFilename($extension);
         $standardFilename = 'standard.webp';
 
         $originalPath = $folder.'/'.$originalFilename;
@@ -143,6 +143,14 @@ class ImageService
 
             return false;
         }
+    }
+
+    /**
+     * Generate an unguessable filename for an original full-resolution image.
+     */
+    public function generateOriginalFilename(string $extension): string
+    {
+        return Str::uuid().'.'.Str::lower($extension);
     }
 
     /**
