@@ -118,11 +118,6 @@
             <p>&copy; {{ date('Y') }} Bingkai.</p>
             <div class="flex items-center gap-4">
                 <a href="{{ route('feed') }}" class="hover:underline">RSS Feed</a>
-                @auth
-                    <a href="{{ route('images.create') }}" class="hover:underline">Upload</a>
-                @else
-                    <a href="{{ route('login') }}" class="hover:underline">Sign In</a>
-                @endauth
             </div>
         </div>
     </footer>
