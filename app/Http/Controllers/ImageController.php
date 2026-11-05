@@ -9,7 +9,6 @@ use App\Services\ImageService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 
 class ImageController extends Controller
@@ -38,17 +37,7 @@ class ImageController extends Controller
      */
     public function feed(): Response
     {
-        $ttl = (int) config('images.cache_ttl', 3600);
-        $version = Cache::get('images_timeline_version', '1');
-        $key = "images_feed_v{$version}";
-
-        $content = Cache::remember($key, $ttl, function (): string {
-            $images = Image::query()->orderBy('id', 'desc')->limit(50)->get();
-
-            return view('feed', compact('images'))->render();
-        });
-
-        return response($content, 200, [
+        return response($this->imageService->getCachedFeed(), 200, [
             'Content-Type' => 'application/rss+xml; charset=UTF-8',
         ]);
     }

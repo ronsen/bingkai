@@ -217,6 +217,25 @@ class ImageService
     }
 
     /**
+     * Get the cached RSS feed content.
+     */
+    public function getCachedFeed(int $limit = 50): string
+    {
+        $ttl = (int) config('images.cache_ttl', 3600);
+        $version = Cache::get('images_timeline_version', '1');
+        $key = "images_feed_v{$version}";
+
+        return Cache::remember($key, $ttl, function () use ($limit): string {
+            $images = ImageModel::query()
+                ->orderByDesc('id')
+                ->limit($limit)
+                ->get();
+
+            return view('feed', compact('images'))->render();
+        });
+    }
+
+    /**
      * Get cached timeline paginator.
      */
     public function getCachedTimeline(
