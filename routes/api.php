@@ -1,9 +1,9 @@
 <?php
 
-use App\Http\Controllers\Api\V1\ImageController;
+use App\Http\Controllers\Api\ImageController;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('v1')->name('api.v1.')->group(function () {
+Route::name('api.')->group(function () {
     Route::get('/images', [ImageController::class, 'index'])->name('images.index');
     Route::post('/images', [ImageController::class, 'store'])->name('images.store');
     Route::get('/images/{slug}', [ImageController::class, 'show'])->name('images.show');
