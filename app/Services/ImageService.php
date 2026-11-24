@@ -164,6 +164,55 @@ class ImageService
     }
 
     /**
+     * Update an image's title and description, regenerating the slug when the title changes.
+     */
+    public function updateImage(
+        ImageModel $image,
+        ?string $title,
+        ?string $description,
+    ): ImageModel {
+        $title = $this->normalizeText($title);
+        $description = $this->normalizeText($description);
+
+        $oldSlug = $image->slug;
+
+        $attributes = [
+            'title' => $title,
+            'description' => $description,
+        ];
+
+        if ($title !== $image->title) {
+            $attributes['slug'] = $this->generateSlug(
+                $title,
+                $image->uuid,
+                $image->id,
+            );
+        }
+
+        $image->update($attributes);
+
+        // Invalidate both the old and current individual image cache and timeline cache
+        $this->invalidateImageCache($oldSlug);
+        $this->invalidateImageCache($image->slug);
+
+        return $image;
+    }
+
+    /**
+     * Trim the given text and convert empty strings to null.
+     */
+    public function normalizeText(?string $value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        $value = trim($value);
+
+        return $value === '' ? null : $value;
+    }
+
+    /**
      * Delete an image record and its associated physical files from storage.
      */
     public function deleteImage(ImageModel $image): bool
